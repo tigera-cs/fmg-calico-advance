@@ -40,9 +40,9 @@ EOF
 Create a pull secret into egress gateway namespace
 
 ```
-kubectl create secret generic egress-pull-secret \
-  --from-file=.dockerconfigjson=/home/tigera/config.json \
-  --type=kubernetes.io/dockerconfigjson -n app1
+kubectl get secret tigera-pull-secret --namespace=calico-system -o yaml | \
+   grep -v '^[[:space:]]*namespace:[[:space:]]*calico-system' | \
+   kubectl apply --namespace=app1 -f -
 ```
 
 ## 8.2. Deploy Egress Gateway
@@ -74,7 +74,7 @@ spec:
         egress-code: red
     spec:
       imagePullSecrets:
-      - name: egress-pull-secret
+      - name: tigera-pull-secret
       nodeSelector:
         kubernetes.io/os: linux
       containers:
